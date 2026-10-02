@@ -1,7 +1,7 @@
 from llm import Claude
 from dotenv import load_dotenv
 import os
-from rag import load_pdf_pages, KeywordRetriever
+from rag import load_pdf_pages, KeywordRetriever, EmbeddingRetriever
 
 def try_claude()-> None:
     load_dotenv()
@@ -18,14 +18,20 @@ def try_loader() -> None:
     print(len(pages))
     print(pages[0].text[:300])
 
-def try_retriever(question, topk) -> None:
+def try_keyword_retriever(question, topk) -> None:
     pages = load_pdf_pages("data/Motor_Insurance_Comprehensive.pdf")
     retriever = KeywordRetriever(pages)
     top_pages = retriever.search(question = question, topk=topk)
     for page in top_pages:
         print(page.number, page.score, page.text)
 
+def try_embedding_retriever(question, topk) -> None:
+    pages = load_pdf_pages("data/Motor_Insurance_Comprehensive.pdf")
+    retriever = EmbeddingRetriever(pages)
+    top_pages = retriever.search(question = question, topk=topk)
+    for page in top_pages:
+        print(page.number, page.score, page.text)
 
 
 if __name__ == "__main__":
-    try_retriever("My car got stolen, is it covered?", topk = 1)
+    try_embedding_retriever("My car got stolen, is it covered?", topk = 2)

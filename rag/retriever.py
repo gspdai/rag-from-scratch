@@ -88,7 +88,6 @@ class EmbeddingRetriever():
         embeddings_file = "cache/embeddings.json"
         self.Page_list = []
         if os.path.exists(embeddings_file):
-            print("File Found")
             with open(embeddings_file, 'r') as file:
                 saved_embeddings = json.load(file)
             for page in pages:
@@ -97,7 +96,6 @@ class EmbeddingRetriever():
                                         embedding= saved_embeddings[str(page.number)])
                                         )
         else:
-            print("file not found")
             embedding_dict = {}
             for page in pages:
                 embedding = _embedding(page)

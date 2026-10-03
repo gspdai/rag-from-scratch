@@ -1,14 +1,13 @@
 from llm import Claude
 from dotenv import load_dotenv
 import os
-from rag import load_pdf_pages, KeywordRetriever, EmbeddingRetriever
+from rag import load_pdf_pages, KeywordRetriever, EmbeddingRetriever, RagAnswerer
 
-def try_claude()-> None:
+def try_claude()-> None:    
     load_dotenv()
     key = os.getenv("ANTHROPIC_KEY")
     if key is None:
         raise ValueError("ANTHROPIC_KEY not found in .env")
-    
     claude = Claude(key=key)
     response = claude.ask("How are you today")
     print(response)
@@ -32,6 +31,19 @@ def try_embedding_retriever(question, topk) -> None:
     for page in top_pages:
         print(page.number, page.score, page.text)
 
+def try_answer(claude_client, retriever, question, topk):
+    answer = RagAnswerer(claude_client, retriever)
+    response = answer.ask(question, topk)
+    print(response)
 
 if __name__ == "__main__":
-    try_embedding_retriever("My car got stolen, is it covered?", topk = 2)
+    load_dotenv()
+    key = os.getenv("ANTHROPIC_KEY")
+    if key is None:
+        raise ValueError("ANTHROPIC_KEY not found in .env")
+    claude_client = Claude(key=key)
+    question = "What is the capital of France?"
+    topk = 2
+    pages = load_pdf_pages("data/Motor_Insurance_Comprehensive.pdf")
+    retriever = EmbeddingRetriever(pages)
+    try_answer(claude_client, retriever, question, topk)
